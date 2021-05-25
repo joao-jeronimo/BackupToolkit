@@ -3,8 +3,10 @@
 # By João Jerónimo
 
 # Dependencies installation:
-#sudo -H pip3 install fabric
-#sudo apt install rsync
+#   sudo -H pip3 install fabric
+#   sudo apt install rsync
+# Exemple task invocation:
+#   invoke update-backup-rsync --backup-profile=h_drive
 
 from invoke import task
 from rsync_calls import do_rsync
@@ -27,12 +29,16 @@ def mount_zfs_root(c):
         raise bkexceptions.VerificationFailed("Looks like ZFS root vol (%s, %s) is not mounted." % ( bkconfigs.ZFS_ROOT_POOLNAME, bkconfigs.ZFS_ROOT_MOUNTPOINT ))
 
 @task(pre=[mount_zfs_root])
-def update_backup_rsync(c):
-    rsync_result = do_rsync(c, **{
-            'portnr':           22,
-            'orig_username':    "remotebackups",
-            'orig_ip':          "192.168.100.105",
-            'orig_path':        "/srv/storage/outras_drives_usl/h/",
-            'dest_path':        "/home/jj/TestBackups/backups_tank/h_drive",
-            })
+def update_backup_rsync(c, backup_profile=""):
+    # Verify args:
+    if backup_profile=='':
+        raise bkexceptions.VerificationFailed("No backup profile specified. Available profiles are: %s" % (', '.join(bkconfigs.BACKUP_PROFILES.keys())))
+    # Do the update:
+    print("== Updating backup named '%s'" % backup_profile)
+    rsync_parms = {
+        **bkconfigs.BACKUP_PROFILES[backup_profile]['origspecs'],
+        'dest_path': bkconfigs.BACKUP_PROFILES[backup_profile]['localspecs']['dest_path'],
+        }
+    print(repr(rsync_parms))
+    rsync_result = do_rsync(c, **rsync_parms)
     return "Correu bem!"
