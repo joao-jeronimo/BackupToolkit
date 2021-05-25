@@ -1,3 +1,4 @@
+import bkconfigs
 import pdb
 
 def get_mounted_fss(c):
@@ -17,3 +18,15 @@ def get_mounted_fss(c):
             dict([ (MOUNTS_COLNAMES[idx], ln[idx]) for idx in range(len(MOUNTS_COLNAMES)) ])
         for ln in fss_table if len(ln)==len(MOUNTS_COLNAMES) ]
     return fss_dictionaries
+
+def datasetname_to_path(dataset_name):
+    return dataset_name.replace(bkconfigs.ZFS_ROOT_POOLNAME, bkconfigs.ZFS_ROOT_MOUNTPOINT)
+def path_to_datasetname(path_name):
+    return dataset_name.replace(bkconfigs.ZFS_ROOT_MOUNTPOINT, bkconfigs.ZFS_ROOT_POOLNAME)
+
+def get_backup_profile(profilename):
+    # Verify args:
+    if backup_profile=='':
+        raise bkexceptions.VerificationFailed("No backup profile specified. Available profiles are: %s" % (', '.join(bkconfigs.BACKUP_PROFILES.keys())))
+    # Get and return the profile:
+    return bkconfigs.BACKUP_PROFILES[backup_profile]

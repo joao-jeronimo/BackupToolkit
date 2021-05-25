@@ -30,15 +30,35 @@ def mount_zfs_root(c):
 
 @task(pre=[mount_zfs_root])
 def update_backup_rsync(c, backup_profile=""):
-    # Verify args:
-    if backup_profile=='':
-        raise bkexceptions.VerificationFailed("No backup profile specified. Available profiles are: %s" % (', '.join(bkconfigs.BACKUP_PROFILES.keys())))
+    the_profile = get_backup_profile(backup_profile)
     # Do the update:
     print("== Updating backup named '%s'" % backup_profile)
     rsync_parms = {
-        **bkconfigs.BACKUP_PROFILES[backup_profile]['origspecs'],
-        'dest_path': bkconfigs.BACKUP_PROFILES[backup_profile]['localspecs']['dest_path'],
+        **the_profile['origspecs'],
+        'dest_path': the_profile['localspecs']['dest_path'],
         }
     print(repr(rsync_parms))
     rsync_result = do_rsync(c, **rsync_parms)
     return "Correu bem!"
+
+@task(pre=[mount_zfs_root])
+def update_backup_global(c, backup_profile=""):
+    # Do the rsync part:
+    update_backup_rsync(c, backup_profile)
+    # Get important string and names:
+    the_profile = get_backup_profile(backup_profile)
+    datasetname = path_to_datasetname(the_profile['localspecs']['dest_path'])
+    # Now, then, create the ZFS snapshot:
+    
+
+
+
+
+
+
+
+
+
+
+
+
