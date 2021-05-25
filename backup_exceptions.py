@@ -1,0 +1,3 @@
+
+class VerificationFailed(BaseException):
+    pass
