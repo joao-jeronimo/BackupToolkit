@@ -17,4 +17,5 @@ def do_rsync(c, portnr, orig_username, orig_ip, orig_path, dest_path):
                     })
     print("rsync_command = %s" % rsync_command)
     # Run the command:
-    return c.run(rsync_command, warn=True)
+    rsync_result = c.run(rsync_command, warn=True)
+    return rsync_result

@@ -19,6 +19,11 @@ def get_mounted_fss(c):
         for ln in fss_table if len(ln)==len(MOUNTS_COLNAMES) ]
     return fss_dictionaries
 
+def find_mounted_fs(fss, fs_spec, fs_file):
+    matches = [ fs for fs in fss
+        if fs['fs_spec']==fs_spec and fs['fs_file']==fs_file ]
+    return matches
+
 def datasetname_to_path(dataset_name):
     return dataset_name.replace(bkconfigs.ZFS_ROOT_POOLNAME, bkconfigs.ZFS_ROOT_MOUNTPOINT)
 def path_to_datasetname(path_name):
