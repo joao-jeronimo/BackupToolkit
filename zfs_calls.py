@@ -1,6 +1,25 @@
 from bkhelpers import dikt_linez
 import pdb
 
+def zfs_create_dataset(c, datasetname, mountpoint, dry_run=True):
+    # Create:
+    zfs_create_command = ('%(zfs_bin)s create %(datasetname)s' % {
+                    'zfs_bin':          c.BackupToolkit.ZFS_BIN,
+                    'datasetname':      datasetname,
+                    'mountpoint':       mountpoint,
+                    })
+    print("zfs_create_command = %s" % zfs_create_command)
+    # Set the mountpoint:
+    zfs_setmountpoint_command = ('%(zfs_bin)s set mountpoint=%(mountpoint)s %(datasetname)s' % {
+                    'zfs_bin':          c.BackupToolkit.ZFS_BIN,
+                    'datasetname':      datasetname,
+                    'mountpoint':       mountpoint,
+                    })
+    print("zfs_setmountpoint_command = %s" % zfs_setmountpoint_command)
+    if not dry_run:
+        c.run(zfs_create_command, warn=True)
+        c.run(zfs_setmountpoint_command, warn=True)
+
 def zfs_create_snapshot(c, datasetname, snapshotname):
     zfs_snapcreate_command = ('%(zfs_bin)s snapshot %(datasetname)s@%(snapshotname)s' % {
                     'zfs_bin':          c.BackupToolkit.ZFS_BIN,

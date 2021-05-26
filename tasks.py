@@ -6,14 +6,16 @@
 #   sudo -H pip3 install fabric
 #   sudo apt install rsync
 # Exemple task invocation:
+#   invoke --config=DriveH.yaml update-backup-global
 #   invoke --config=DriveH.yaml update-backup-global --backup-profile=h_drive
 # Configurations:
-#   sudo /sbin/zfs allow jj snapshot,mount backupstank
+#   sudo /sbin/zfs allow jj create,snapshot,mount backupstank
 
+import os
 from invoke import task
 from datetime import datetime
 from rsync_calls import do_rsync
-from zfs_calls import zfs_create_snapshot, zfs_mount_dataset, zfs_list_datasets, zfs_find_dataset_in_list
+from zfs_calls import zfs_create_snapshot, zfs_mount_dataset, zfs_list_datasets, zfs_find_dataset_in_list, zfs_create_dataset
 import bkexceptions, bkhelpers
 import pdb
 
@@ -32,7 +34,23 @@ def check_dataset_registry(c):
 
 @task(check_dataset_registry)
 def create_zfs_assets(c, dry_run=False):
-    pass
+    # Find datasets that do not exist:
+    zfs_datasets = zfs_list_datasets(c)
+    nonexistant_datasets = [
+            neds for neds in c.BackupToolkit.ZFS_DATASETS
+            if len(zfs_find_dataset_in_list(zfs_datasets, neds, bkhelpers.datasetname_to_path(c, neds)))==0
+            ]
+    # Create them, or elsewise print them:
+    for dstc in nonexistant_datasets:
+        # Calculate related values:
+        datasetname = dstc
+        mountpoint = bkhelpers.datasetname_to_path(c, datasetname)
+        # Verify if the folder is already there, and rmdir it if so:
+        if os.path.isdir(mountpoint):
+            # Is the empty folder cannot be deleted, then we can't do anything for you!
+            os.rmdir(mountpoint)
+        # Call dataset creation:
+        zfs_create_dataset(c, datasetname, mountpoint, dry_run=dry_run)
 
 @task(check_dataset_registry)
 def check_fix_zfs_mounts(c, force_mount_datasets=False):
