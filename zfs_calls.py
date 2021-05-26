@@ -1,4 +1,3 @@
-import bkconfigs
 
 def zfs_create_snapshot(c, datasetname, snapshotname):
     zfs_snapcreate_command = ('%(zfs_bin)s snapshot %(datasetname)s@%(snapshotname)s' % {

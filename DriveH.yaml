@@ -9,3 +9,6 @@ BackupToolkit:
                 'orig_path':        "/srv/storage/outras_drives_usl/h/"
             'localspecs':
                 'dest_path':        "/home/jj/TestBackups/backups_tank/h_drive"
+    
+    ZFS_DATASETS:   [ "backupstank/h_drive" ]
+    ZFS_SKIP_LIST:  [ ]

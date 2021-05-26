@@ -14,7 +14,7 @@ from invoke import task
 from datetime import datetime
 from rsync_calls import do_rsync
 from zfs_calls import zfs_create_snapshot, zfs_mount_dataset
-import bkexceptions, bkconfigs, bkhelpers
+import bkexceptions, bkhelpers
 import pdb
 
 @task
@@ -23,7 +23,7 @@ def check_dataset_existence(c):
         misspair
         for misspair in [   ( miss['localspecs']['dest_path'], bkhelpers.path_to_datasetname(c, miss['localspecs']['dest_path']))
                 for miss in c.BackupToolkit.PROFILES.values()   ]
-        if (misspair[1] not in bkconfigs.ZFS_DATASETS) and (misspair[1] not in bkconfigs.ZFS_SKIP_LIST)
+        if (misspair[1] not in c.BackupToolkit.ZFS_DATASETS) and (misspair[1] not in c.BackupToolkit.ZFS_SKIP_LIST)
         ]
     if any(missing_datasets):
         raise bkexceptions.VerificationFailed("Following backup destinations don't have their respective ZFS dataset registered in ZFS_DATASETS nor ZFS_SKIP_LIST lists:\n   %s"
@@ -36,7 +36,7 @@ def check_fix_zfs_mounts(c, force_mount_datasets=False):
     zfs_mounteds = [ fss for fss in all_mounted_fss
         if fss['fs_vfstype']=='zfs' ]
     # Build list of ZFS datasets to see if they are mounted:
-    full_zfs_list = ( [c.BackupToolkit.ZFS_ROOT_POOLNAME] + bkconfigs.ZFS_DATASETS )
+    full_zfs_list = ( [c.BackupToolkit.ZFS_ROOT_POOLNAME] + c.BackupToolkit.ZFS_DATASETS )
     # See ant report if any is not mounted:
     not_mounted_zfss = [
         nmf for nmf
@@ -44,7 +44,7 @@ def check_fix_zfs_mounts(c, force_mount_datasets=False):
         if not any ( bkhelpers.find_mounted_fs(zfs_mounteds, nmf, bkhelpers.datasetname_to_path(c, nmf)) )
         ]
     if any(not_mounted_zfss):
-        if bkconfigs.AUTO_MOUNT_DATASETS or force_mount_datasets:
+        if c.BackupToolkit.AUTO_MOUNT_DATASETS or force_mount_datasets:
             for to_mount in not_mounted_zfss:
                 zfs_mount_dataset(c, to_mount, su_do=True)
         else:

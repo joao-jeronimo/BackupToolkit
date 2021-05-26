@@ -1,4 +1,3 @@
-import bkconfigs
 import pdb
 
 def do_rsync(c, portnr, orig_username, orig_ip, orig_path, dest_path):

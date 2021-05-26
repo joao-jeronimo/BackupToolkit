@@ -1,4 +1,3 @@
-import bkconfigs
 import pdb
 
 def get_mounted_fss(c):
