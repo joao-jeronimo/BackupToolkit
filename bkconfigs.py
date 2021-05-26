@@ -1,6 +1,10 @@
 
+ZFS_BIN = "/sbin/zfs"
 ZFS_ROOT_POOLNAME   = "backupstank"
 ZFS_ROOT_MOUNTPOINT = "/home/jj/TestBackups/backups_tank"
+
+RSYNC_BIN = "/usr/bin/rsync"
+RSYNC_EXCLUSIONS = [ ".recycle", ".zfs", ]
 
 ZFS_DATASETS = [
     "backupstank/h_drive"
