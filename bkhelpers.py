@@ -25,9 +25,9 @@ def find_mounted_fs(fss, fs_spec, fs_file):
     return matches
 
 def datasetname_to_path(c, dataset_name):
-    return dataset_name.replace(c.BackupToolkit.ZFS_ROOT_POOLNAME, bkconfigs.ZFS_ROOT_MOUNTPOINT)
+    return dataset_name.replace(c.BackupToolkit.ZFS_ROOT_POOLNAME, c.BackupToolkit.ZFS_ROOT_MOUNTPOINT)
 def path_to_datasetname(c, path_name):
-    return path_name.replace(bkconfigs.ZFS_ROOT_MOUNTPOINT, c.BackupToolkit.ZFS_ROOT_POOLNAME)
+    return path_name.replace(c.BackupToolkit.ZFS_ROOT_MOUNTPOINT, c.BackupToolkit.ZFS_ROOT_POOLNAME)
 
 def get_backup_profile(c, profilename):
     # Verify args:
