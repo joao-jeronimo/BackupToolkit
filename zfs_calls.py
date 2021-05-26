@@ -1,5 +1,5 @@
 
-def create_snapshot(c, datasetname, snapshotname):
+def zfs_create_snapshot(c, datasetname, snapshotname):
     zfs_snapcreate_command = ('zfs snapshot %(datasetname)s@%(snapshotname)s' % {
                     'datasetname':      datasetname,
                     'snapshotname':     snapshotname,

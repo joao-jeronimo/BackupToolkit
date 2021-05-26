@@ -9,7 +9,9 @@
 #   invoke update-backup-rsync --backup-profile=h_drive
 
 from invoke import task
+from datetime import datetime
 from rsync_calls import do_rsync
+from zfs_calls import zfs_create_snapshot
 import bkexceptions, bkconfigs, bkhelpers
 import pdb
 
@@ -30,7 +32,7 @@ def mount_zfs_root(c):
 
 @task(pre=[mount_zfs_root])
 def update_backup_rsync(c, backup_profile=""):
-    the_profile = get_backup_profile(backup_profile)
+    the_profile = bkhelpers.get_backup_profile(backup_profile)
     # Do the update:
     print("== Updating backup named '%s'" % backup_profile)
     rsync_parms = {
@@ -46,9 +48,20 @@ def update_backup_global(c, backup_profile=""):
     # Do the rsync part:
     update_backup_rsync(c, backup_profile)
     # Get important string and names:
-    the_profile = get_backup_profile(backup_profile)
-    datasetname = path_to_datasetname(the_profile['localspecs']['dest_path'])
+    the_profile = bkhelpers.get_backup_profile(backup_profile)
+    datasetname = bkhelpers.path_to_datasetname(the_profile['localspecs']['dest_path'])
+    # Build a name for the snapshot:
+    nowtime = datetime.now()
+    snapshot_name = "Backup_%04d%02d%02d_%02d%02d%02d" % (
+            nowtime.year,
+            nowtime.month,
+            nowtime.day,
+            nowtime.hour,
+            nowtime.minute,
+            nowtime.second,
+            )
     # Now, then, create the ZFS snapshot:
+    zfs_create_snapshot(c, datasetname, snapshot_name)
     
 
 

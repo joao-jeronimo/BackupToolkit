@@ -22,11 +22,11 @@ def get_mounted_fss(c):
 def datasetname_to_path(dataset_name):
     return dataset_name.replace(bkconfigs.ZFS_ROOT_POOLNAME, bkconfigs.ZFS_ROOT_MOUNTPOINT)
 def path_to_datasetname(path_name):
-    return dataset_name.replace(bkconfigs.ZFS_ROOT_MOUNTPOINT, bkconfigs.ZFS_ROOT_POOLNAME)
+    return path_name.replace(bkconfigs.ZFS_ROOT_MOUNTPOINT, bkconfigs.ZFS_ROOT_POOLNAME)
 
 def get_backup_profile(profilename):
     # Verify args:
-    if backup_profile=='':
+    if profilename=='':
         raise bkexceptions.VerificationFailed("No backup profile specified. Available profiles are: %s" % (', '.join(bkconfigs.BACKUP_PROFILES.keys())))
     # Get and return the profile:
-    return bkconfigs.BACKUP_PROFILES[backup_profile]
+    return bkconfigs.BACKUP_PROFILES[profilename]
