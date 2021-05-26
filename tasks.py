@@ -7,6 +7,8 @@
 #   sudo apt install rsync
 # Exemple task invocation:
 #   invoke update-backup-rsync --backup-profile=h_drive
+# Configurations:
+#   sudo /sbin/zfs allow jj snapshot backupstan
 
 from invoke import task
 from datetime import datetime
