@@ -1,0 +1,4 @@
+
+BackupToolkit:
+    ZFS_BIN: "/sbin/zfs"
+    ZFS_ROOT_POOLNAME: backupstank
