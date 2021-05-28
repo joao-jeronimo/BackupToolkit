@@ -1,4 +1,4 @@
-from bkhelpers import dikt_linez
+from .bkhelpers import dikt_linez
 import pdb
 
 def zfs_create_dataset(c, datasetname, mountpoint, dry_run=True):

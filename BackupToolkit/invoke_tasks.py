@@ -12,7 +12,7 @@
 #   sudo /sbin/zfs allow jj create,snapshot,mount backupstank
 
 from invoke import task
-import backup_guards, backup_procedures
+from . import backup_guards, backup_procedures
 
 @task
 def check_dataset_registry(c):
