@@ -18,18 +18,22 @@ import backup_guards, backup_procedures
 def check_dataset_registry(c):
     return backup_guards.check_dataset_registry(c)
 
-@task(check_dataset_registry)
+@task
 def check_fix_zfs_mounts(c, force_mount_datasets=False):
+    backup_guards.check_dataset_registry(c)
     return backup_guards.check_fix_zfs_mounts(c, force_mount_datasets)
 
-@task(check_dataset_registry)
+@task
 def create_zfs_assets(c, dry_run=False):
+    backup_guards.check_dataset_registry(c)
     return backup_procedures.create_zfs_assets(c, dry_run)
 
-@task(pre=[check_fix_zfs_mounts])
+@task
 def update_backup_rsync(c, backup_profile=""):
+    backup_guards.check_fix_zfs_mounts(c)
     return backup_procedures.update_backup_rsync(c, backup_profile)
 
-@task(pre=[check_fix_zfs_mounts])
+@task
 def update_backup_global(c, backup_profile=""):
+    backup_guards.check_fix_zfs_mounts(c)
     return backup_procedures.update_backup_global(c, backup_profile)
