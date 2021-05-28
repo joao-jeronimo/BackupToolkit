@@ -13,9 +13,11 @@
 
 from invoke import task
 from . import backup_guards, backup_procedures
+import pdb
 
 @task
 def check_dataset_registry(c):
+    pdb.set_trace()
     return backup_guards.check_dataset_registry(c)
 
 @task
