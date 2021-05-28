@@ -9,11 +9,11 @@
 
 from celery import Celery
 
-app = Celery('´LivingBackupToolkit',
+app = Celery('BackupToolkit',
              #broker='amqp://',
              broker='pyamqp://guest@localhost//',
              backend='rpc://',
-             include=['.celery_tasks'])
+             include=['BackupToolkit.celery_tasks'])
 
 ## Optional configuration, see the application user guide.
 #app.conf.update(
