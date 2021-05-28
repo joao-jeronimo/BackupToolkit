@@ -2,6 +2,7 @@
 # By João Jerónimo
 
 from .celery import app
+from datetime import datetime
 
 @app.task
 def fill_log_file():
