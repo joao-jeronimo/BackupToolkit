@@ -14,16 +14,18 @@ def build_invoke_namespace():
     return thens
 def build_invoke_executor():
     invoke_nmspc = build_invoke_namespace()
-    invoke_config = invoke.Config(
-        project_location = "/home/jj/TestBackups/BackupToolkit/",
-        runtime_path = "/home/jj/TestBackups/BackupToolkit/DriveH.yaml",)
-    return invoke.Executor(collection=invoke_nmspc, config=invoke_config)
+    #invoke_config = invoke.Config(
+    #    project_location = "/home/jj/TestBackups/BackupToolkit/",
+    #    runtime_path = "/home/jj/TestBackups/BackupToolkit/DriveH.yaml",)
+    #return invoke.Executor(collection=invoke_nmspc, config=invoke_config)
+    return invoke.Executor(collection=invoke_nmspc)
 
 @app.task
 def check_dataset_registry():
     executor = build_invoke_executor()
-    #pdb.set_trace()
-    return executor.execute("BackupToolkit.check_dataset_registry")
+    invoke_result = executor.execute("BackupToolkit.check_dataset_registry")
+    # Executor.execute() returns: A dict mapping task objects to their return values.
+    pdb.set_trace()
 
 ###################################
 ### Heartbeats for testing: #######

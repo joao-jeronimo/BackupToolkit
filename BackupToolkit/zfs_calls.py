@@ -50,7 +50,7 @@ def zfs_list_datasets(be):
     if zfs_list_res.failed:
         raise bkexceptions.VerificationFailed("Could not get list of mounted filesystems.")
     # Convert to list of lists:
-    parsable_output = dikt_linez(zfs_list_res)
+    parsable_output = dikt_linez(zfs_list_res.stdout)
     return parsable_output
 
 def zfs_find_dataset_in_list(thelist, datasetname, mountpoint):
