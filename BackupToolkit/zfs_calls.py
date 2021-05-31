@@ -1,52 +1,52 @@
 from .bkhelpers import dikt_linez
 import pdb
 
-def zfs_create_dataset(c, datasetname, mountpoint, dry_run=True):
+def zfs_create_dataset(be, datasetname, mountpoint, dry_run=True):
     # Create:
     zfs_create_command = ('%(zfs_bin)s create %(datasetname)s' % {
-                    'zfs_bin':          c.BackupToolkit.ZFS_BIN,
+                    'zfs_bin':          be.config.BackupToolkit.ZFS_BIN,
                     'datasetname':      datasetname,
                     'mountpoint':       mountpoint,
                     })
     print("zfs_create_command = %s" % zfs_create_command)
     # Set the mountpoint:
     zfs_setmountpoint_command = ('%(zfs_bin)s set mountpoint=%(mountpoint)s %(datasetname)s' % {
-                    'zfs_bin':          c.BackupToolkit.ZFS_BIN,
+                    'zfs_bin':          be.config.BackupToolkit.ZFS_BIN,
                     'datasetname':      datasetname,
                     'mountpoint':       mountpoint,
                     })
     print("zfs_setmountpoint_command = %s" % zfs_setmountpoint_command)
     if not dry_run:
-        c.run(zfs_create_command, warn=True)
-        c.run(zfs_setmountpoint_command, warn=True)
+        be.ictx.run(zfs_create_command, warn=True)
+        be.ictx.run(zfs_setmountpoint_command, warn=True)
 
-def zfs_create_snapshot(c, datasetname, snapshotname):
+def zfs_create_snapshot(be, datasetname, snapshotname):
     zfs_snapcreate_command = ('%(zfs_bin)s snapshot %(datasetname)s@%(snapshotname)s' % {
-                    'zfs_bin':          c.BackupToolkit.ZFS_BIN,
+                    'zfs_bin':          be.config.BackupToolkit.ZFS_BIN,
                     'datasetname':      datasetname,
                     'snapshotname':     snapshotname,
                     })
     print("zfs_snapcreate_command = %s" % zfs_snapcreate_command)
-    return c.run(zfs_snapcreate_command, warn=True)
+    return be.ictx.run(zfs_snapcreate_command, warn=True)
 
-def zfs_mount_dataset(c, datasetname, su_do=False):
+def zfs_mount_dataset(be, datasetname, su_do=False):
     zfs_mount_command = ('%(zfs_bin)s mount %(datasetname)s' % {
-                    'zfs_bin':          c.BackupToolkit.ZFS_BIN,
+                    'zfs_bin':          be.config.BackupToolkit.ZFS_BIN,
                     'datasetname':      datasetname,
                     })
     print("zfs_mount_command = %s" % zfs_mount_command)
     if su_do:
-        return c.sudo(zfs_mount_command, warn=True)
+        return be.ictx.sudo(zfs_mount_command, warn=True)
     else:
-        return c.run(zfs_mount_command, warn=True)
+        return be.ictx.run(zfs_mount_command, warn=True)
 
-def zfs_list_datasets(c):
+def zfs_list_datasets(be):
     # Build and run command:
     zfs_list_command = ('%(zfs_bin)s list' % {
-                    'zfs_bin':          c.BackupToolkit.ZFS_BIN,
+                    'zfs_bin':          be.config.BackupToolkit.ZFS_BIN,
                     })
     print("zfs_list_command = %s" % zfs_list_command)
-    zfs_list_res = c.run(zfs_list_command, warn=True)
+    zfs_list_res = be.ictx.run(zfs_list_command, warn=True)
     if zfs_list_res.failed:
         raise bkexceptions.VerificationFailed("Could not get list of mounted filesystems.")
     # Convert to list of lists:

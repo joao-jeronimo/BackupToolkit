@@ -19,7 +19,6 @@ import pdb
 @task
 def check_dataset_registry(c):
     be = BackupEngine(c)
-    #pdb.set_trace()
     return be.check_dataset_registry()
 
 @task

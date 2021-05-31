@@ -1,8 +1,8 @@
 import pdb
 
-def dikt_linez(df_res, colnames=False, skiplines=False):
+def dikt_linez(comm_res, colnames=False, skiplines=False):
     # Basic preprocessing the source string:
-    fss_table = [ ln.split() for ln in df_res.stdout.split('\n') ]
+    fss_table = [ ln.split() for ln in comm_res.split('\n') ]
     # Sensible default arguments:
     if not skiplines:
         if colnames:
@@ -19,33 +19,9 @@ def dikt_linez(df_res, colnames=False, skiplines=False):
         for ln in fss_table[skiplines:] if len(ln)==len(colnames) ]
     return list_of_dikts
 
-def get_mounted_fss(c):
-    df_res = c.run("LC_ALL=C cat /proc/mounts")
-    if df_res.failed:
-        raise bkexceptions.VerificationFailed("Could not get list of mounted filesystems.")
-    # First metadata:
-    fss_dictionaries = dikt_linez(df_res, [
-            'fs_spec',
-            'fs_file',
-            'fs_vfstype',
-            'fs_mntops',
-            'fs_freq',
-            'fs_passno',    ])
-    return fss_dictionaries
-
 def find_mounted_fs(fss, fs_spec, fs_file):
     matches = [ fs for fs in fss
         if fs['fs_spec']==fs_spec and fs['fs_file']==fs_file ]
     return matches
 
-def datasetname_to_path(c, dataset_name):
-    return dataset_name.replace(c.BackupToolkit.ZFS_ROOT_POOLNAME, c.BackupToolkit.ZFS_ROOT_MOUNTPOINT)
-def path_to_datasetname(c, path_name):
-    return path_name.replace(c.BackupToolkit.ZFS_ROOT_MOUNTPOINT, c.BackupToolkit.ZFS_ROOT_POOLNAME)
 
-def get_backup_profile(c, profilename):
-    # Verify args:
-    if profilename=='':
-        raise bkexceptions.VerificationFailed("No backup profile specified. Available profiles are: %s" % (', '.join(c.BackupToolkit.PROFILES.keys())))
-    # Get and return the profile:
-    return c.BackupToolkit.PROFILES[profilename]
