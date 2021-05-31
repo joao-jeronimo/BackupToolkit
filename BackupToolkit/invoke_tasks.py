@@ -12,9 +12,9 @@ def check_dataset_registry(c):
     be = BackupEngine(c)
     return be.check_dataset_registry()
 @task
-def check_fix_zfs_mounts(c, force_mount_datasets=False):
+def check_fix_zfs_mounts(c, backup_profile="", force_mount_datasets=False):
     be = BackupEngine(c)
-    return be.check_fix_zfs_mounts(force_mount_datasets)
+    return be.check_fix_zfs_mounts(backup_profile, force_mount_datasets)
 @task
 def create_zfs_assets(c, dry_run=False):
     be = BackupEngine(c)

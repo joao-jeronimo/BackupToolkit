@@ -31,13 +31,20 @@ class BackupEngine:
             raise bkexceptions.VerificationFailed("Following backup destinations don't have their respective ZFS dataset registered in ZFS_DATASETS nor ZFS_SKIP_LIST lists:\n   %s"
                     % ( "\n   ".join( [ repr(p) for p in missing_datasets ] ) ))
 
-    def _check_fix_zfs_mounts(self, force_mount_datasets=False):
+    def _check_fix_zfs_mounts(self, backup_profile="", force_mount_datasets=False):
         # Get all ZFS mounts:
         all_mounted_fss = self.get_mounted_fss()
         zfs_mounteds = [ fss for fss in all_mounted_fss
             if fss['fs_vfstype']=='zfs' ]
         # Build list of ZFS datasets to see if they are mounted:
-        full_zfs_list = ( [self.config.BackupToolkit.ZFS_ROOT_POOLNAME] + self.config.BackupToolkit.ZFS_DATASETS )
+        full_zfs_list = [self.config.BackupToolkit.ZFS_ROOT_POOLNAME]
+        if backup_profile:
+            profile_obj = self.config.BackupToolkit.PROFILES[backup_profile]
+            profile_mp = profile_obj.localspecs.dest_path
+            datasets_to_add = [ self.path_to_datasetname(profile_mp) ]
+            full_zfs_list += datasets_to_add
+        else:
+            full_zfs_list += self.config.BackupToolkit.ZFS_DATASETS
         # See and report if any is not mounted:
         not_mounted_zfss = [
             nmf for nmf
@@ -132,17 +139,17 @@ class BackupEngine:
     # Too call from outside - only do checks once:
     def check_dataset_registry(self):
         return self._check_dataset_registry()
-    def check_fix_zfs_mounts(self, force_mount_datasets=False):
+    def check_fix_zfs_mounts(self, backup_profile="", force_mount_datasets=False):
         self._check_dataset_registry()
-        return self._check_fix_zfs_mounts(force_mount_datasets)
+        return self._check_fix_zfs_mounts(backup_profile, force_mount_datasets)
     def create_zfs_assets(self, dry_run=False):
         self._check_dataset_registry()
         return self._create_zfs_assets(dry_run)
     def update_backup_rsync(self, backup_profile=""):
-        self._check_fix_zfs_mounts()
+        self._check_fix_zfs_mounts(backup_profile)
         return self._update_backup_rsync(backup_profile)
     def update_backup_global(self, backup_profile=""):
-        self._check_fix_zfs_mounts()
+        self._check_fix_zfs_mounts(backup_profile)
         return self._update_backup_global(backup_profile)
 
     # Helper methods:
