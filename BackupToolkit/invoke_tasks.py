@@ -24,23 +24,19 @@ def check_dataset_registry(c):
 @task
 def check_fix_zfs_mounts(c, force_mount_datasets=False):
     be = BackupEngine(c)
-    be.check_dataset_registry()
     return be.check_fix_zfs_mounts(force_mount_datasets)
 
 @task
 def create_zfs_assets(c, dry_run=False):
     be = BackupEngine(c)
-    be.check_dataset_registry()
     return be.create_zfs_assets(dry_run)
 
 @task
 def update_backup_rsync(c, backup_profile=""):
     be = BackupEngine(c)
-    be.check_fix_zfs_mounts()
     return be.update_backup_rsync(backup_profile)
 
 @task
 def update_backup_global(c, backup_profile=""):
     be = BackupEngine(c)
-    be.check_fix_zfs_mounts()
     return be.update_backup_global(backup_profile)

@@ -19,7 +19,7 @@ class BackupEngine:
     def find_config_file_path(self):
         return "./BackupToolkitConfig.yaml"
     
-    def check_dataset_registry(self):
+    def _check_dataset_registry(self):
         missing_datasets = [
             misspair
             for misspair in [
@@ -31,7 +31,7 @@ class BackupEngine:
             raise bkexceptions.VerificationFailed("Following backup destinations don't have their respective ZFS dataset registered in ZFS_DATASETS nor ZFS_SKIP_LIST lists:\n   %s"
                     % ( "\n   ".join( [ repr(p) for p in missing_datasets ] ) ))
 
-    def check_fix_zfs_mounts(self, force_mount_datasets=False):
+    def _check_fix_zfs_mounts(self, force_mount_datasets=False):
         # Get all ZFS mounts:
         all_mounted_fss = self.get_mounted_fss()
         zfs_mounteds = [ fss for fss in all_mounted_fss
@@ -75,7 +75,7 @@ class BackupEngine:
 
 
 
-    def create_zfs_assets(self, dry_run=False):
+    def _create_zfs_assets(self, dry_run=False):
         # Find datasets that do not exist:
         zfs_datasets = zfs_list_datasets(self)
         nonexistant_datasets = [
@@ -94,7 +94,7 @@ class BackupEngine:
             # Call dataset creation:
             zfs_create_dataset(self, datasetname, mountpoint, dry_run=dry_run)
 
-    def update_backup_rsync(self, backup_profile=""):
+    def _update_backup_rsync(self, backup_profile=""):
         the_profile = self.get_backup_profile(backup_profile)
         # Do the update:
         print("== Updating backup named '%s'" % backup_profile)
@@ -108,11 +108,11 @@ class BackupEngine:
             raise bkexceptions.VerificationFailed("Rsync failed for %s" % repr(rsync_parms))
         return "Correu bem!"
 
-    def update_backup_global(self, backup_profile=""):
+    def _update_backup_global(self, backup_profile=""):
         # Do the rsync part:
         if not backup_profile and len(self.config.BackupToolkit.PROFILES.keys())==1:
             backup_profile = tuple(self.config.BackupToolkit.PROFILES.keys())[0]
-        self.update_backup_rsync(backup_profile)
+        self._update_backup_rsync(backup_profile)
         # Get important string and names:
         the_profile = self.get_backup_profile(backup_profile)
         datasetname = self.path_to_datasetname(the_profile['localspecs']['dest_path'])
@@ -128,6 +128,22 @@ class BackupEngine:
                 )
         # Now, then, create the ZFS snapshot:
         zfs_create_snapshot(self, datasetname, snapshot_name)
+    
+    # Too call from outside - only do checks once:
+    def check_dataset_registry(self):
+        return self._check_dataset_registry()
+    def check_fix_zfs_mounts(self, force_mount_datasets=False):
+        self._check_dataset_registry()
+        return self._check_fix_zfs_mounts(force_mount_datasets)
+    def create_zfs_assets(self, dry_run=False):
+        self._check_dataset_registry()
+        return self._create_zfs_assets(dry_run)
+    def update_backup_rsync(self, backup_profile=""):
+        self._check_fix_zfs_mounts()
+        return self._update_backup_rsync(backup_profile)
+    def update_backup_global(self, backup_profile=""):
+        self._check_fix_zfs_mounts()
+        return self._update_backup_global(backup_profile)
 
     # Helper methods:
     def get_mounted_fss(self):
