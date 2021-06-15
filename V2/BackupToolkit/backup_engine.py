@@ -16,6 +16,17 @@ class BackupEngine:
         with open( config_file_path ) as file:
             loaded_config = yaml.load(file, Loader=yaml.FullLoader)
             self.config = Dict(loaded_config)
+        # Set-up log file:
+        self.logfile_path = self.config.BackupToolkit.LOG_FILE
+        self.logfile = open(self.logfile_path, "a")
+    
+    def log(self, text):
+        nowtime = datetime.now()
+        self.logfile.write("LOG %04d-%02d-%02d %02d:%02d:%02d: %s\n" % (
+                nowtime.year,   nowtime.month,  nowtime.day,
+                nowtime.hour,   nowtime.minute, nowtime.second,
+                text ))
+        self.logfile.flush()
     
     def _check_dataset_registry(self):
         missing_datasets = [
@@ -136,7 +147,9 @@ class BackupEngine:
     
     # Too call from outside - only do checks once:
     def check_dataset_registry(self):
-        return self._check_dataset_registry()
+        self.log("== Call check_dataset_registry")
+        self._check_dataset_registry()
+        self.log("== End check_dataset_registry - OK")
     def check_fix_zfs_mounts(self, backup_profile="", force_mount_datasets=False):
         self._check_dataset_registry()
         return self._check_fix_zfs_mounts(backup_profile, force_mount_datasets)
