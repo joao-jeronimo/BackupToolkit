@@ -151,8 +151,12 @@ class BackupEngine:
         self._check_dataset_registry()
         self.log("== End check_dataset_registry - OK")
     def check_fix_zfs_mounts(self, backup_profile="", force_mount_datasets=False):
+        self.log("== Call check_fix_zfs_mounts")
         self._check_dataset_registry()
-        return self._check_fix_zfs_mounts(backup_profile, force_mount_datasets)
+        self.log("All ZFS datasets are registered in config file")
+        self._check_fix_zfs_mounts(backup_profile, force_mount_datasets)
+        self.log("ZFS dataset for profile '%s' is mounted" % backup_profile)
+        self.log("== End check_fix_zfs_mounts - OK")
     def create_zfs_assets(self, dry_run=False):
         self._check_dataset_registry()
         return self._create_zfs_assets(dry_run)

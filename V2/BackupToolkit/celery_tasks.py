@@ -9,7 +9,7 @@ import pdb
 
 MAIN_CONF_FILENAME = "BackupToolkitConfig.yaml"
 
-def call_task_by_name(taskname):
+def build_engine():
     # Open and interpret user-level config file:
     homedir = os.path.expanduser("~")
     user_config_file_path = os.path.join(homedir, '.backup_toolkit.conf')
@@ -23,13 +23,27 @@ def call_task_by_name(taskname):
     main_config_file_path = os.path.join(main_config_dir, MAIN_CONF_FILENAME)
     # This is a YAML config file that stores all needed information:
     be = BackupEngine(main_config_file_path)
+    return be
+def call_task_by_name(be, taskname, *args, **kwargs):
+    be = build_engine()
     invokable = getattr(be, taskname)
-    return invokable
+    try:
+        return invokable(*args, **kwargs)
+    except BaseException as e:
+        be.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+        be.log("!!!!!!!!!!!! Exception thrown by task '%s':\n%s" % (taskname, str(e)) )
+        be.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
 
 @app.task
 def check_dataset_registry():
-    taskmethod = call_task_by_name("check_dataset_registry")
-    return taskmethod()
+    be = build_engine()
+    return call_task_by_name(be, "check_dataset_registry")
+@app.task
+def check_fix_zfs_mounts(backup_profile="", force_mount_datasets=False):
+    be = build_engine()
+    return call_task_by_name(be, "check_fix_zfs_mounts",
+            backup_profile,
+            force_mount_datasets)
 
 ###################################
 ### Heartbeats for testing: #######
