@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # By João Jerónimo
-import os
+import os, invoke
 from .celery import app
 from datetime import datetime
 from .backup_engine import BackupEngine
@@ -21,8 +21,11 @@ def build_engine():
     # This file points to the main config directory:
     main_config_dir = user_config_dict["MAIN_CONFIG_DIR"]
     main_config_file_path = os.path.join(main_config_dir, MAIN_CONF_FILENAME)
+    # Create an invoke context that is fit for using under the control of Celery:
+    ictx = invoke.context.Context()
+    ictx.config.run.hide = 'both'
     # This is a YAML config file that stores all needed information:
-    be = BackupEngine(main_config_file_path)
+    be = BackupEngine(main_config_file_path, ictx)
     return be
 def call_task_by_name(be, taskname, *args, **kwargs):
     be = build_engine()

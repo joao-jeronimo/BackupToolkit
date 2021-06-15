@@ -6,11 +6,25 @@ from .zfs_calls import zfs_create_snapshot, zfs_mount_dataset, zfs_list_datasets
 from . import bkexceptions, bkhelpers
 import pdb
 
+class BackupEngineLoggingContext:
+    def __init__(self, be, ictx):
+        self.be = be
+        self.ictx = ictx
+    def __getattr__(self, attr):
+        return getattr(self.ictx, attr)
+    def run(self, command, **kwargs):
+        runret = self.ictx.run(command, **kwargs)
+        self.be.log("Command '%s' result:\n%s\n" % ( command, runret.stdout ) )
+        if runret.stderr.strip()!='':
+            self.be.log("!!! Command '%s' stderr:\n%s\n" % ( command, runret.stdout ) )
+        return runret
+
 class BackupEngine:
 
     def __init__(self, config_file_path, ictx=False):
-        if ictx:    self.ictx = ictx
-        else:       self.ictx = invoke.context.Context()
+        if not ictx:
+            ictx = invoke.context.Context()
+        self.ictx = BackupEngineLoggingContext(self, ictx)
         # Find and lioad config file:
         with open( config_file_path ) as file:
             loaded_config = yaml.load(file, Loader=yaml.FullLoader)
@@ -21,7 +35,7 @@ class BackupEngine:
     
     def log(self, text):
         nowtime = datetime.now()
-        self.logfile.write("LOG %04d-%02d-%02d %02d:%02d:%02d: %s\n" % (
+        self.logfile.write("** LOG %04d-%02d-%02d %02d:%02d:%02d: %s\n" % (
                 nowtime.year,   nowtime.month,  nowtime.day,
                 nowtime.hour,   nowtime.minute, nowtime.second,
                 text ))
