@@ -1,14 +1,35 @@
 # -*- coding: utf-8 -*-
 # By João Jerónimo
+import os
 from .celery import app
 from datetime import datetime
-from . import backup_toolkit_testing
+from .backup_engine import BackupEngine
 ###########################################
 import pdb
 
+MAIN_CONF_FILENAME = "BackupToolkitConfig.yaml"
+
+def call_task_by_name(taskname):
+    # Open and interpret user-level config file:
+    homedir = os.path.expanduser("~")
+    user_config_file_path = os.path.join(homedir, '.backup_toolkit.conf')
+    with open(user_config_file_path, "r") as conf_file:
+        user_config_dict = {}
+        for lin in conf_file.readlines():
+            lindata = lin.split("=")
+            user_config_dict[lindata[0].strip()] = lindata[1].strip()
+    # This file points to the main config directory:
+    main_config_dir = user_config_dict["MAIN_CONFIG_DIR"]
+    main_config_file_path = os.path.join(main_config_dir, MAIN_CONF_FILENAME)
+    # This is a YAML config file that stores all needed information:
+    be = BackupEngine(main_config_file_path)
+    invokable = getattr(be, taskname)
+    return invokable
+
 @app.task
 def check_dataset_registry():
-    backup_toolkit_testing.do_check_dataset_registry()
+    taskmethod = call_task_by_name("check_dataset_registry")
+    return taskmethod()
 
 ###################################
 ### Heartbeats for testing: #######
