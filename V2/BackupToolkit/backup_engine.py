@@ -6,7 +6,6 @@ from .zfs_calls import zfs_create_snapshot, zfs_mount_dataset, zfs_list_datasets
 from . import bkexceptions, bkhelpers
 import pdb
 
-
 class BackupEngine:
 
     def __init__(self, config_file_path, ictx=False):
@@ -124,7 +123,7 @@ class BackupEngine:
             raise bkexceptions.VerificationFailed("Rsync failed for %s" % repr(rsync_parms))
         return "Correu bem!"
 
-    def _update_backup_global(self, backup_profile=""):
+    def _update_backup_versioned(self, backup_profile=""):
         # Do the rsync part:
         if not backup_profile and len(self.config.BackupToolkit.PROFILES.keys())==1:
             backup_profile = tuple(self.config.BackupToolkit.PROFILES.keys())[0]
@@ -158,14 +157,21 @@ class BackupEngine:
         self.log("ZFS dataset for profile '%s' is mounted" % backup_profile)
         self.log("== End check_fix_zfs_mounts - OK")
     def create_zfs_assets(self, dry_run=False):
+        self.log("== Call create_zfs_assets")
         self._check_dataset_registry()
-        return self._create_zfs_assets(dry_run)
+        self._create_zfs_assets(dry_run)
+        self.log("== End create_zfs_assets - OK")
     def update_backup_rsync(self, backup_profile=""):
+        self.log("== Call update_backup_rsync")
         self._check_fix_zfs_mounts(backup_profile)
-        return self._update_backup_rsync(backup_profile)
-    def update_backup_global(self, backup_profile=""):
+        self._update_backup_rsync(backup_profile)
+        self.log("== End update_backup_rsync - OK")
+    def update_backup_versioned(self, backup_profile=""):
+        self.log("== Call update_backup_versioned")
         self._check_fix_zfs_mounts(backup_profile)
-        return self._update_backup_global(backup_profile)
+        self.log("ZFS dataset for profile '%s' is mounted" % backup_profile)
+        self._update_backup_versioned(backup_profile)
+        self.log("== End update_backup_versioned - OK")
 
     # Helper methods:
     def get_mounted_fss(self):

@@ -45,6 +45,26 @@ def check_fix_zfs_mounts(backup_profile="", force_mount_datasets=False):
             backup_profile,
             force_mount_datasets)
 
+
+@app.task
+def create_zfs_assets(backup_profile="", force_mount_datasets=False):
+    be = build_engine()
+    return call_task_by_name(be, "create_zfs_assets",
+            backup_profile,
+            force_mount_datasets)
+
+@app.task
+def update_backup_rsync(backup_profile=""):
+    be = build_engine()
+    return call_task_by_name(be, "update_backup_rsync",
+            backup_profile)
+
+@app.task
+def update_backup_versioned(backup_profile=""):
+    be = build_engine()
+    return call_task_by_name(be, "update_backup_versioned",
+            backup_profile)
+
 ###################################
 ### Heartbeats for testing: #######
 ###################################
