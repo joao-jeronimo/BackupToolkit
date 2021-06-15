@@ -15,7 +15,7 @@ def do_rsync(be, portnr, orig_username, orig_ip, orig_path, dest_path):
                     'orig_path':        orig_path,
                     'dest_path':        dest_path,
                     })
-    print("rsync_command = %s" % rsync_command)
+    be.log("rsync_command = %s" % rsync_command)
     # Run the command:
     rsync_result = be.ictx.run(rsync_command, warn=True)
     return rsync_result

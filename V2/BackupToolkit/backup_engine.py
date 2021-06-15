@@ -112,12 +112,12 @@ class BackupEngine:
     def _update_backup_rsync(self, backup_profile=""):
         the_profile = self.get_backup_profile(backup_profile)
         # Do the update:
-        print("== Updating backup named '%s'" % backup_profile)
+        self.log("Updating backup named '%s'" % backup_profile)
         rsync_parms = {
             **the_profile['origspecs'],
             'dest_path': the_profile['localspecs']['dest_path'],
             }
-        print(repr(rsync_parms))
+        self.log(repr(rsync_parms))
         rsync_result = do_rsync(self, **rsync_parms)
         if rsync_result.failed:
             raise bkexceptions.VerificationFailed("Rsync failed for %s" % repr(rsync_parms))
