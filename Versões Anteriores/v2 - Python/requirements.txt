@@ -1,8 +1,0 @@
-# External deps - Debian:
-# sudo apt-get build-dep rsync python3-bsddb3
-
-gitpython
-berkeleydb
-
-# Non-deps:
-# bsddb3
