@@ -4,7 +4,7 @@ rotname=$1
 set -x
 case $rotname in
   test_scripts)
-    for i in ./test_*
+    for i in ./test_*.py
     do  $i
     done
     ;;
