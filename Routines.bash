@@ -3,8 +3,10 @@ rotname=$1
 
 set -x
 case $rotname in
-  ola)
-    echo Que seja "'olá'" como tu dizes.
+  test_scripts)
+    for i in ./test_*
+    do  $i
+    done
     ;;
     
   *)

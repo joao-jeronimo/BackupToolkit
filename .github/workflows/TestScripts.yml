@@ -7,5 +7,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Say ola
-        run: ./Routines.bash ola
+      - name: Test scripts
+        run: ./Routines.bash test_scripts
