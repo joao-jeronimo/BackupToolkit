@@ -1,6 +1,6 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
-import sys, os
+import sys, os, zipfile
 from pathlib import Path
 
 def scanfolders(folder):
@@ -18,10 +18,10 @@ def scanfolders(folder):
         else:
             yield subpath
 
-for folpath in scanfolders(folder = sys.argv[1]):
+for fullpath in scanfolders(folder = sys.argv[1]):
     file_status = 'OK'
     ### Verify the file basename:
-    file_basename = os.path.basename(folpath)
+    file_basename = os.path.basename(fullpath)
     # Sensitive extensions:
     if file_status == 'OK':
         for extension in ['.key', '.ppk', '.pem', '.p12', ]:
@@ -32,4 +32,14 @@ for folpath in scanfolders(folder = sys.argv[1]):
         for fragment in ['id_rsa', 'id_ed25519', 'mountpoint', 'key', 'colornote', 'marta', 'sofia', 'mulher', ]:
             if fragment in file_basename.lower():
                 file_status = f"!!! Sensitive name fragment '{fragment}'."
-    print("%-66s %s" % (folpath, file_status, ))
+    # Print file status:
+    print("%-66s %s" % (fullpath, file_status, ))
+    # Inspect zip files:
+    if file_status == 'OK' and file_basename.lower().endswith('zip'):
+        thezip = zipfile.ZipFile(fullpath, mode='r')
+        for membpath in thezip.namelist():
+            if membpath[-1] == '/':
+                continue
+            print("    > %s" % (
+                membpath,
+                ))
