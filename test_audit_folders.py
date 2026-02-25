@@ -12,7 +12,7 @@ class TestAuditFolders(unittest.TestCase):
         """
         The audit_folders.py script lists every file found.
         """
-        prog_run = subprocess.run([ './audit_folders.py', './test_fixtures' ],
+        prog_run = subprocess.run([ './audit_folders.py', './test_fixtures/test_audit_folders' ],
             check=True, stdout=subprocess.PIPE)
         self.assertEqual(str(prog_run.stdout, 'utf-8'), (
             "./test_fixtures/test_audit_folders/folder1/file.keys\n"
