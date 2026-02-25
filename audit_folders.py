@@ -8,15 +8,13 @@ def scanfolders(folder):
     Emulates the effect of the «find -type f» command.
         folder  The starting folder.
     """
-    gen = Path(folder).rglob("*")
-    for fol in gen:
-        # Skip directories:
-        if fol.is_dir():
-            continue
-        # Yield this path:
-        if not fol.is_absolute():
-            fol = os.path.join(os.path.curdir, fol)
-        yield fol
+    for subfolder in os.listdir(folder):
+        subpath = os.path.join(folder, subfolder)
+        if os.path.isdir(subpath):
+            for subsub in scanfolders(subpath):
+                yield subsub
+        else:
+            yield subpath
 
 for folpath in scanfolders(folder = sys.argv[1]):
     file_status = 'OK'
