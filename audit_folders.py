@@ -4,6 +4,10 @@ import sys, os
 from pathlib import Path
 
 def scanfolders(folder):
+    """
+    Emulates the effect of the «find -type f» command.
+        folder  The starting folder.
+    """
     gen = Path(folder).rglob("*")
     for fol in gen:
         # Skip directories:
@@ -15,4 +19,10 @@ def scanfolders(folder):
         yield fol
 
 for folpath in scanfolders(folder = sys.argv[1]):
-    print(folpath)
+    file_status = 'OK'
+    # Verify the file basename:
+    file_basename = os.path.basename(folpath)
+    for extension in ['.key', '.ppk', '.pem', '.p12', ]:
+        if file_basename.endswith(extension):
+            file_status = f"!!! Sensitive extension '{extension[1:]}'."
+    print("%-66s %s" % (folpath, file_status, ))
