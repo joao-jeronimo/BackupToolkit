@@ -20,9 +20,16 @@ def scanfolders(folder):
 
 for folpath in scanfolders(folder = sys.argv[1]):
     file_status = 'OK'
-    # Verify the file basename:
+    ### Verify the file basename:
     file_basename = os.path.basename(folpath)
-    for extension in ['.key', '.ppk', '.pem', '.p12', ]:
-        if file_basename.endswith(extension):
-            file_status = f"!!! Sensitive extension '{extension[1:]}'."
+    # Sensitive extensions:
+    if file_status == 'OK':
+        for extension in ['.key', '.ppk', '.pem', '.p12', ]:
+            if file_basename.lower().endswith(extension):
+                file_status = f"!!! Sensitive extension '{extension[1:]}'."
+    # Sensitive name fragments:
+    if file_status == 'OK':
+        for fragment in ['id_rsa', 'id_ed25519', 'mountpoint', 'key', 'colornote', 'marta', 'sofia', 'mulher', ]:
+            if fragment in file_basename.lower():
+                file_status = f"!!! Sensitive name fragment '{fragment}'."
     print("%-66s %s" % (folpath, file_status, ))
