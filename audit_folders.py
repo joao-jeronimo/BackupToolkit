@@ -8,7 +8,9 @@ def scanfolders(folder):
     Emulates the effect of the «find -type f» command.
         folder  The starting folder.
     """
-    for subfolder in os.listdir(folder):
+    here_subs = os.listdir(folder)
+    here_subs.sort()
+    for subfolder in here_subs:
         subpath = os.path.join(folder, subfolder)
         if os.path.isdir(subpath):
             for subsub in scanfolders(subpath):
