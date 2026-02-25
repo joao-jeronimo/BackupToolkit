@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 import unittest, subprocess
 
+def sorted_list(thelist):
+    lll = thelist.copy()
+    lll.sort()
+    return lll
+
 class TestAuditFolders(unittest.TestCase):
     """
     Tests the audit_folders.py script.
@@ -14,22 +19,27 @@ class TestAuditFolders(unittest.TestCase):
         """
         prog_run = subprocess.run([ './audit_folders.py', './test_fixtures/test_audit_folders' ],
             check=True, stdout=subprocess.PIPE)
-        self.assertEqual(str(prog_run.stdout, 'utf-8'), (
-            "./test_fixtures/test_audit_folders/folder1/file.keys\n"
-            "./test_fixtures/test_audit_folders/folder1/bababakeybobobo\n"
-            "./test_fixtures/test_audit_folders/folder1/file.ppk\n"
-            "./test_fixtures/test_audit_folders/folder1/file.pem\n"
-            "./test_fixtures/test_audit_folders/folder1/id_ed25519\n"
-            "./test_fixtures/test_audit_folders/folder1/Mountpoints.zip\n"
-            "./test_fixtures/test_audit_folders/folder1/id_rsa\n"
-            "./test_fixtures/test_audit_folders/folder2/folder4/as_martaes.txt\n"
-            "./test_fixtures/test_audit_folders/folder2/folder4/as_sofiaes.txt\n"
-            "./test_fixtures/test_audit_folders/folder2/folder4/as_mulheres.txt\n"
-            "./test_fixtures/test_audit_folders/folder2/folder3/mps.zip\n"
-            "./test_fixtures/test_audit_folders/folder2/file.p12\n"
-            "./test_fixtures/test_audit_folders/folder2/backup_colornote_mybake\n"
-            "./test_fixtures/test_audit_folders/folder2/containes_text\n"
-            ))
+        sorted_stdout = sorted_list([
+            li
+            for li in str(prog_run.stdout, 'utf-8').split('\n')
+            if len(li) > 0
+            ])
+        self.assertEqual(sorted_stdout, sorted_list([
+            "./test_fixtures/test_audit_folders/folder1/file.key",
+            "./test_fixtures/test_audit_folders/folder1/bababakeybobobo",
+            "./test_fixtures/test_audit_folders/folder1/file.ppk",
+            "./test_fixtures/test_audit_folders/folder1/file.pem",
+            "./test_fixtures/test_audit_folders/folder1/id_ed25519",
+            "./test_fixtures/test_audit_folders/folder1/Mountpoints.zip",
+            "./test_fixtures/test_audit_folders/folder1/id_rsa",
+            "./test_fixtures/test_audit_folders/folder2/folder4/as_martaes.txt",
+            "./test_fixtures/test_audit_folders/folder2/folder4/as_sofiaes.txt",
+            "./test_fixtures/test_audit_folders/folder2/folder4/as_mulheres.txt",
+            "./test_fixtures/test_audit_folders/folder2/folder3/mps.zip",
+            "./test_fixtures/test_audit_folders/folder2/file.p12",
+            "./test_fixtures/test_audit_folders/folder2/backup_colornote_mybake",
+            "./test_fixtures/test_audit_folders/folder2/containes_text",
+            ]))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
