@@ -39,6 +39,7 @@ class TestAuditFolders(unittest.TestCase):
             "./test_fixtures/test_audit_folders/folder2/file.p12                !!! Sensitive extension 'p12'.",
             "./test_fixtures/test_audit_folders/folder2/backup_colornote_mybake !!! Sensitive name fragment 'colornote'.",
             "./test_fixtures/test_audit_folders/folder2/containes_text          OK",
+            "./test_fixtures/test_audit_folders/folder2/Innocent file.txt       OK",
             ]))
 
 if __name__ == '__main__':
