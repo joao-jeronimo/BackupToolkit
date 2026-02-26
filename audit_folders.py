@@ -18,28 +18,39 @@ def scanfolders(folder):
         else:
             yield subpath
 
-for fullpath in scanfolders(folder = sys.argv[1]):
+def audit_file_basename(flbn):
+    """
+    Audits a file basename (i.e. file name and extension without it's path),
+    returning a human-readable findingm or OK if no finding.
+        flbn    The file name to audit.
+    """
     file_status = 'OK'
-    ### Verify the file basename:
-    file_basename = os.path.basename(fullpath)
     # Sensitive extensions:
     if file_status == 'OK':
         for extension in ['.key', '.ppk', '.pem', '.p12', ]:
-            if file_basename.lower().endswith(extension):
+            if flbn.lower().endswith(extension):
                 file_status = f"!!! Sensitive extension '{extension[1:]}'."
     # Sensitive name fragments:
     if file_status == 'OK':
         for fragment in ['id_rsa', 'id_ed25519', 'mountpoint', 'key', 'colornote', 'marta', 'sofia', 'mulher', ]:
-            if fragment in file_basename.lower():
+            if fragment in flbn.lower():
                 file_status = f"!!! Sensitive name fragment '{fragment}'."
-    # Print file status:
-    print("%-66s %s" % (fullpath, file_status, ))
-    # Inspect zip files:
-    if file_status == 'OK' and file_basename.lower().endswith('zip'):
-        thezip = zipfile.ZipFile(fullpath, mode='r')
-        for membpath in thezip.namelist():
-            if membpath[-1] == '/':
-                continue
-            print("    > %s" % (
-                membpath,
-                ))
+    return file_status
+
+def main():
+    for fullpath in scanfolders(folder = sys.argv[1]):
+        file_basename = os.path.basename(fullpath)
+        ### Verify the file basename:
+        file_status = audit_file_basename(file_basename)
+        ### Print file status:
+        print("%-66s %s" % (fullpath, file_status, ))
+        ### Inspect zip files:
+        if file_status == 'OK' and file_basename.lower().endswith('zip'):
+            thezip = zipfile.ZipFile(fullpath, mode='r')
+            zipmembers = thezip.namelist()
+            zipmembers.sort()
+            for membpath in zipmembers:
+                if membpath[-1] == '/':
+                    continue
+                print("    > %-64s %s" % (membpath, audit_file_basename(os.path.basename(membpath)) ))
+main()
