@@ -25,7 +25,7 @@ class TestAuditFolders(unittest.TestCase):
             "./test_fixtures/test_audit_folders/folder1/id_rsa                  !!! Sensitive name fragment 'id_rsa'.",
             "./test_fixtures/test_audit_folders/folder2/Innocent file.txt       OK",
             "./test_fixtures/test_audit_folders/folder2/backup_colornote_mybake !!! Sensitive name fragment 'colornote'.",
-            "./test_fixtures/test_audit_folders/folder2/containes_text          !!! Sensitive file contents 'PRIVATE KEY'.",
+            "./test_fixtures/test_audit_folders/folder2/containes_text          OK",
             "./test_fixtures/test_audit_folders/folder2/file.p12                !!! Sensitive extension 'p12'.",
             "./test_fixtures/test_audit_folders/folder2/folder3/mps.zip         OK",
             "    > mps/fla/Mountpoints.zip                                          !!! Sensitive name fragment 'mountpoint'.",

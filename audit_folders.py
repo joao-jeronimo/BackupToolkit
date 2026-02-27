@@ -1,6 +1,6 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
-import sys, os, zipfile, mmap
+import sys, os, zipfile
 from pathlib import Path
 
 def scanfolders(folder):
@@ -37,19 +37,6 @@ def audit_file_basename(flbn):
                 file_status = f"!!! Sensitive name fragment '{fragment}'."
     return file_status
 
-def audit_file_contents(flpath):
-    """
-    Audits file contents using mmap().
-        flpath  The path of the file to audit.
-    """
-    ### Memory-map the file:
-    with open(flpath, "rb") as fl:
-        mmap.mmap(  fl.fileno(), length=0, flags=MAP_SHARED,
-                    prot=PROT_WRITE | PROT_READ, access=ACCESS_DEFAULT,
-                    offset=0, trackfd=True)
-    
-    return 'OK'
-
 def main():
     for fullpath in scanfolders(folder = sys.argv[1]):
         # Preparation:
@@ -58,9 +45,6 @@ def main():
         ### Verify the file basename:
         if file_status == 'OK':
             file_status = audit_file_basename(file_basename)
-        ### Verify file contents:
-        if file_status == 'OK':
-            file_status = audit_file_contents(fullpath)
         ### Print file status:
         print("%-66s %s" % (fullpath, file_status, ))
         ### Inspect zip files:
@@ -72,7 +56,5 @@ def main():
                 if membpath[-1] == '/':
                     continue
                 subfile_status = audit_file_basename(os.path.basename(membpath))
-                #if subfile_status != 'OK':
-                #    file_status = '>>> Sensitive contents inside ZIP file:'
                 print("    > %-64s %s" % (membpath, subfile_status))
 main()
