@@ -1,6 +1,6 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
-import sys, os, zipfile
+import sys, os, zipfile, argparse
 from pathlib import Path
 
 def scanfolders(folder):
@@ -38,7 +38,16 @@ def audit_file_basename(flbn):
     return file_status
 
 def main():
-    for fullpath in scanfolders(folder = sys.argv[1]):
+    ### Cmdline parsing:
+    # Elementary:
+    parser = argparse.ArgumentParser("Scans a directory for sensitive files")
+    parser.add_argument("--noscan", type=str, help="Comma-separated list of scans to be skipped. For now only 'ok' is implemented.")
+    parser.add_argument("rootfolder", type=str, help="The starting folder.")
+    args = parser.parse_args()
+    # Secundary:
+    scantypes_to_skip = args.noscan.lower().split(',') if args.noscan else []
+    ### Behaviour:
+    for fullpath in scanfolders(folder = args.rootfolder):
         # Preparation:
         file_basename = os.path.basename(fullpath)
         file_status = 'OK'
@@ -46,7 +55,8 @@ def main():
         if file_status == 'OK':
             file_status = audit_file_basename(file_basename)
         ### Print file status:
-        print("%-66s %s" % (fullpath, file_status, ))
+        if ('ok' not in scantypes_to_skip) or (file_status != 'OK') or (file_basename.lower().endswith('.zip')):
+            print("%-66s %s" % (fullpath, file_status, ))
         ### Inspect zip files:
         if file_status == 'OK' and file_basename.lower().endswith('zip'):
             thezip = zipfile.ZipFile(fullpath, mode='r')
@@ -56,5 +66,6 @@ def main():
                 if membpath[-1] == '/':
                     continue
                 subfile_status = audit_file_basename(os.path.basename(membpath))
-                print("    > %-64s %s" % (membpath, subfile_status))
+                if ('ok' not in scantypes_to_skip) or (subfile_status != 'OK'):
+                    print("    > %-64s %s" % (membpath, subfile_status))
 main()
