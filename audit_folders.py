@@ -48,17 +48,17 @@ def main():
     scantypes_to_skip = args.noscan.lower().split(',') if args.noscan else []
     ### Behaviour:
     for fullpath in scanfolders(folder = args.rootfolder):
-        # Preparation:
+        ### Preparation:
         file_basename = os.path.basename(fullpath)
         file_status = 'OK'
         ### Verify the file basename:
         if file_status == 'OK':
             file_status = audit_file_basename(file_basename)
-        ### Print file status:
-        if ('ok' not in scantypes_to_skip) or (file_status != 'OK') or (file_basename.lower().endswith('.zip')):
+        ### Report or scan inside file:
+        if   file_status != 'OK':
             print("%-66s %s" % (fullpath, file_status, ))
-        ### Inspect zip files:
-        if file_status == 'OK' and file_basename.lower().endswith('zip'):
+        elif file_basename.lower().endswith('zip'):
+            print("%-66s %s" % (fullpath, file_status, ))
             thezip = zipfile.ZipFile(fullpath, mode='r')
             zipmembers = thezip.namelist()
             zipmembers.sort()
@@ -68,4 +68,7 @@ def main():
                 subfile_status = audit_file_basename(os.path.basename(membpath))
                 if ('ok' not in scantypes_to_skip) or (subfile_status != 'OK'):
                     print("    > %-64s %s" % (membpath, subfile_status))
+        elif 'ok' not in scantypes_to_skip:
+            print("%-66s %s" % (fullpath, file_status, ))
+
 main()
