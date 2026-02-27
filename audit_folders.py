@@ -56,9 +56,9 @@ def main():
             file_status = audit_file_basename(file_basename)
         ### Report or scan inside file:
         if   file_status != 'OK':
-            print("%-66s %s" % (fullpath, file_status, ))
+            print("%-66s %s" % (fullpath, file_status))
         elif file_basename.lower().endswith('zip'):
-            print("%-66s %s" % (fullpath, file_status, ))
+            print("%-66s %s" % (fullpath, ">> Scanning inside zipfile ... >>"))
             thezip = zipfile.ZipFile(fullpath, mode='r')
             zipmembers = thezip.namelist()
             zipmembers.sort()
@@ -69,6 +69,6 @@ def main():
                 if ('ok' not in scantypes_to_skip) or (subfile_status != 'OK'):
                     print("    > %-64s %s" % (membpath, subfile_status))
         elif 'ok' not in scantypes_to_skip:
-            print("%-66s %s" % (fullpath, file_status, ))
+            print("%-66s %s" % (fullpath, file_status))
 
 main()
