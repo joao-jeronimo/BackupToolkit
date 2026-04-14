@@ -13,6 +13,7 @@ begin_nonreentrancy $PIDFILE
 
 time rclone sync --progress --create-empty-src-dirs                 \
     "$JJPRIVADO_LOCAL" "$JJPRIVADO_REMOTE"
+time rclone ls "$JJPRIVADO_REMOTE"
 
 ##################################################################################
 end_nonreentrancy $PIDFILE

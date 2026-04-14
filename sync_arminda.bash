@@ -6,14 +6,14 @@ IDIR=$(dirname $0)
 source $IDIR/lib.bash
 # Other vars:
 source ~/.backupbot_params
-PIDFILE=$IDIR/run/sync_jjarquivo.pid
+PIDFILE=$IDIR/run/sync_arminda.pid
 # The program:
 begin_nonreentrancy $PIDFILE
 ##################################################################################
 
 time rclone sync --progress --create-empty-src-dirs                 \
-    "$JJARQUIVO_LOCAL" "$JJARQUIVO_REMOTE"
-time rclone ls "$JJARQUIVO_REMOTE"
+    "$ARMINDA_LOCAL" "$ARMINDA_REMOTE"
+time rclone ls "$ARMINDA_REMOTE"
 
 ##################################################################################
 end_nonreentrancy $PIDFILE
